@@ -45,6 +45,44 @@ const HOOKS = [
   "Cambrian's go-to dog walking crew.",
 ];
 
+const TOPICS = [
+  {
+    label: "About Us",
+    title: "About Us",
+    body: "We're a group of local teens who love dogs and love making pet parents' lives easier. Every walk is reliable, safe, and fun for your pup.",
+  },
+  {
+    label: "What We Do",
+    title: "What We Do",
+    body: "Daily walks, feeding & water visits, playtime, and short-term dogsitting — all around the Cambrian area.",
+  },
+  {
+    label: "Pricing",
+    title: "Our Pricing",
+    body: "$15 per walk. $15 per visit for water, food, and playtime. Ask us about short-term dogsitting rates!",
+  },
+  {
+    label: "Meet the Walkers",
+    title: "Meet the Walkers",
+    body: "Friendly, responsible local teens who treat your dog like family — not strangers from an app.",
+  },
+  {
+    label: "Why Choose Us",
+    title: "Why Choose Us",
+    body: "Local, reliable, and always on time. We treat every dog like our own, every single walk.",
+  },
+  {
+    label: "Service Area",
+    title: "Service Area",
+    body: "Proudly serving the Cambrian area and nearby neighborhoods. Reach out to confirm we cover your street!",
+  },
+  {
+    label: "Book With Us",
+    title: "Ready to Book?",
+    body: "Message us anytime to set up a walk, a visit, or short-term dogsitting. We'll take great care of your pup!",
+  },
+];
+
 const ROTATION_KEY = "htdw_hook_index";
 
 function getRotationIndex() {
@@ -367,6 +405,92 @@ function drawPostSlide(ctx, photoImg, dogName, blurb) {
   ctx.fillText(`${EMAIL_LINE1}${EMAIL_LINE2}`, cx, H - 95);
 }
 
+// ---------- Random topic slide (About Us, Pricing, Meet the Walkers, etc.) ----------
+
+function drawTopicSlide(ctx, photoImg, title, body) {
+  drawFrame(ctx, CREAM);
+
+  const cx = W / 2;
+  const maxWidth = W - BORDER * 2 - 100;
+  const titleLineHeight = 74;
+  const bodyLineHeight = 52;
+  const gapAfterTitle = 50;
+  const gapAfterPhoto = 60;
+  const photoW = 620;
+  const photoH = 460;
+
+  ctx.font = `800 64px "${FONT}"`;
+  const titleLines = wrapText(ctx, title || "About Us", maxWidth);
+
+  ctx.font = `700 40px "${FONT}"`;
+  const bodyLines = wrapText(ctx, body || "", maxWidth);
+
+  // vertically center the whole content block (title + optional photo + body)
+  // in the space above the footer, so a slide without a photo doesn't leave
+  // an awkward empty gap.
+  let contentHeight = titleLines.length * titleLineHeight + gapAfterTitle;
+  if (photoImg) contentHeight += photoH + gapAfterPhoto;
+  contentHeight += bodyLines.length * bodyLineHeight;
+
+  const topBound = BORDER + 70;
+  const bottomBound = H - 180;
+  const startY = topBound + Math.max(0, (bottomBound - topBound - contentHeight) / 2);
+
+  // topY tracks the top of the next block; convert to a text baseline only
+  // at the point of drawing (baseline ≈ top + ~80% of the line height).
+  let topY = startY;
+
+  ctx.fillStyle = GREEN;
+  ctx.textAlign = "center";
+  ctx.font = `800 64px "${FONT}"`;
+  drawCenteredLines(ctx, titleLines, cx, topY + titleLineHeight * 0.8, titleLineHeight);
+  topY += titleLines.length * titleLineHeight + gapAfterTitle;
+
+  if (photoImg) {
+    const photoX = cx - photoW / 2;
+    const photoY = topY;
+    const radius = 28;
+
+    ctx.save();
+    roundRect(ctx, photoX, photoY, photoW, photoH, radius);
+    ctx.clip();
+    const ir = photoImg.width / photoImg.height;
+    const fr = photoW / photoH;
+    let dw, dh, dx, dy;
+    if (ir > fr) {
+      dh = photoH;
+      dw = dh * ir;
+      dx = photoX - (dw - photoW) / 2;
+      dy = photoY;
+    } else {
+      dw = photoW;
+      dh = dw / ir;
+      dx = photoX;
+      dy = photoY - (dh - photoH) / 2;
+    }
+    ctx.drawImage(photoImg, dx, dy, dw, dh);
+    ctx.restore();
+
+    ctx.save();
+    roundRect(ctx, photoX, photoY, photoW, photoH, radius);
+    ctx.strokeStyle = GREEN;
+    ctx.lineWidth = 14;
+    ctx.stroke();
+    ctx.restore();
+
+    topY += photoH + gapAfterPhoto;
+  }
+
+  ctx.fillStyle = GREEN;
+  ctx.textAlign = "center";
+  ctx.font = `700 40px "${FONT}"`;
+  drawCenteredLines(ctx, bodyLines, cx, topY + bodyLineHeight * 0.8, bodyLineHeight);
+
+  // small brand footer
+  ctx.font = `700 32px "${FONT}"`;
+  ctx.fillText("Happy Trails Dog Walking", cx, H - 80);
+}
+
 // ---------- Slide 3 (fixed, never changes) ----------
 
 function drawSlide3(ctx) {
@@ -409,10 +533,12 @@ const canvas1 = document.getElementById("canvas1");
 const canvas2 = document.getElementById("canvas2");
 const canvas3 = document.getElementById("canvas3");
 const canvasPost = document.getElementById("canvasPost");
+const canvasTopic = document.getElementById("canvasTopic");
 const ctx1 = canvas1.getContext("2d");
 const ctx2 = canvas2.getContext("2d");
 const ctx3 = canvas3.getContext("2d");
 const ctxPost = canvasPost.getContext("2d");
+const ctxTopic = canvasTopic.getContext("2d");
 
 const hookTextEl = document.getElementById("hookText");
 const hookPosEl = document.getElementById("hookPos");
@@ -432,8 +558,18 @@ const postDownloadBtn = document.getElementById("postDownloadBtn");
 const postShareBtn = document.getElementById("postShareBtn");
 const postShareStatusEl = document.getElementById("postShareStatus");
 
+const topicShuffleBtn = document.getElementById("topicShuffleBtn");
+const topicLabelEl = document.getElementById("topicLabel");
+const topicTitleEl = document.getElementById("topicTitle");
+const topicBodyEl = document.getElementById("topicBody");
+const topicPhotoInputEl = document.getElementById("topicPhotoInput");
+const topicDownloadBtn = document.getElementById("topicDownloadBtn");
+const topicShareBtn = document.getElementById("topicShareBtn");
+const topicShareStatusEl = document.getElementById("topicShareStatus");
+
 let currentPhotoImg = null;
 let currentPostPhotoImg = null;
+let currentTopicPhotoImg = null; // optional — no placeholder default, unlike the other photo slots
 const placeholderPhoto = new Image();
 placeholderPhoto.src = "placeholder-dog.png";
 placeholderPhoto.onload = () => {
@@ -463,7 +599,38 @@ function renderAll() {
   drawSlide2(ctx2, currentPhotoImg, dogNameEl.value);
   drawSlide3(ctx3);
   drawPostSlide(ctxPost, currentPostPhotoImg, postDogNameEl.value, postBlurbEl.value);
+  drawTopicSlide(ctxTopic, currentTopicPhotoImg, topicTitleEl.value, topicBodyEl.value);
 }
+
+function pickRandomTopic() {
+  const topic = TOPICS[Math.floor(Math.random() * TOPICS.length)];
+  topicTitleEl.value = topic.title;
+  topicBodyEl.value = topic.body;
+  topicLabelEl.textContent = `(${topic.label})`;
+}
+
+topicShuffleBtn.addEventListener("click", () => {
+  pickRandomTopic();
+  renderAll();
+});
+
+topicTitleEl.addEventListener("input", renderAll);
+topicBodyEl.addEventListener("input", renderAll);
+
+topicPhotoInputEl.addEventListener("change", (e) => {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const img = new Image();
+    img.onload = () => {
+      currentTopicPhotoImg = img;
+      renderAll();
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+});
 
 shuffleBtn.addEventListener("click", () => {
   const next = (getRotationIndex() + 1) % HOOKS.length;
@@ -582,48 +749,69 @@ generateBtn.addEventListener("click", async () => {
   renderAll();
 });
 
-postDownloadBtn.addEventListener("click", async () => {
-  renderAll();
-  const name = (postDogNameEl.value || "dog").trim().toLowerCase().replace(/[^a-z0-9]+/g, "-");
-  await downloadCanvas(canvasPost, `post-thank-you-${name || "dog"}.png`);
-});
-
 function canvasToBlob(canvas) {
   return new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
 }
 
-postShareBtn.addEventListener("click", async () => {
-  renderAll();
-  const name = (postDogNameEl.value || "dog").trim().toLowerCase().replace(/[^a-z0-9]+/g, "-");
-  const blob = await canvasToBlob(canvasPost);
-  const file = new File([blob], `post-thank-you-${name || "dog"}.png`, { type: "image/png" });
+function slugify(text) {
+  return (text || "").trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
 
-  const shareData = {
-    files: [file],
-    title: "Happy Trails Dog Walking",
-    text: `Thank you for walking with me today, ${postDogNameEl.value || "pup"}! 🐾`,
-  };
+async function shareCanvas(canvas, filename, shareText, statusEl) {
+  const blob = await canvasToBlob(canvas);
+  const file = new File([blob], filename, { type: "image/png" });
+  const shareData = { files: [file], title: "Happy Trails Dog Walking", text: shareText };
 
   if (navigator.canShare && navigator.canShare(shareData)) {
     try {
       await navigator.share(shareData);
-      postShareStatusEl.textContent = "";
+      statusEl.textContent = "";
     } catch (err) {
       // AbortError just means the user canceled the share sheet — not an error to surface
       if (err.name !== "AbortError") {
-        postShareStatusEl.textContent = `Share failed: ${err.message}`;
+        statusEl.textContent = `Share failed: ${err.message}`;
       }
     }
   } else {
-    postShareStatusEl.textContent =
-      "Sharing isn't supported here (this needs a phone browser, e.g. Safari on iPhone or Chrome on Android). Use Download Post instead, then open Instagram and post the saved image manually.";
+    statusEl.textContent =
+      "Sharing isn't supported here (this needs a phone browser, e.g. Safari on iPhone or Chrome on Android). Use Download instead, then open Instagram and post the saved image manually.";
   }
+}
+
+postDownloadBtn.addEventListener("click", async () => {
+  renderAll();
+  const name = slugify(postDogNameEl.value) || "dog";
+  await downloadCanvas(canvasPost, `post-thank-you-${name}.png`);
+});
+
+postShareBtn.addEventListener("click", async () => {
+  renderAll();
+  const name = slugify(postDogNameEl.value) || "dog";
+  await shareCanvas(
+    canvasPost,
+    `post-thank-you-${name}.png`,
+    `Thank you for walking with me today, ${postDogNameEl.value || "pup"}! 🐾`,
+    postShareStatusEl
+  );
+});
+
+topicDownloadBtn.addEventListener("click", async () => {
+  renderAll();
+  const slug = slugify(topicTitleEl.value) || "topic";
+  await downloadCanvas(canvasTopic, `topic-${slug}.png`);
+});
+
+topicShareBtn.addEventListener("click", async () => {
+  renderAll();
+  const slug = slugify(topicTitleEl.value) || "topic";
+  await shareCanvas(canvasTopic, `topic-${slug}.png`, topicTitleEl.value || "Happy Trails Dog Walking", topicShareStatusEl);
 });
 
 // ---------- init ----------
 
 async function init() {
   loadCurrentHookIntoBox();
+  pickRandomTopic();
   renderAll(); // draw immediately with fallback font so the page isn't blank
 
   // canvas text doesn't trigger the browser's automatic webfont fetch, so

@@ -60,6 +60,46 @@
 
 <hr />
 
+<h2>Random Topic Slide</h2>
+<p class="hint">A single slide about the business (About Us, What We Do, Pricing, Meet the Walkers, etc.) — hit shuffle for a random topic to start from, then edit freely.</p>
+
+<section class="controls">
+  <div class="field">
+    <button id="topicShuffleBtn" type="button">Shuffle Random Topic</button>
+    <span id="topicLabel" class="hint"></span>
+  </div>
+
+  <div class="field">
+    <label for="topicTitle">Title:</label>
+    <input type="text" id="topicTitle" />
+  </div>
+
+  <div class="field">
+    <label for="topicBody">Body text:</label>
+    <textarea id="topicBody" rows="4"></textarea>
+  </div>
+
+  <div class="field">
+    <label for="topicPhotoInput">Upload photo (optional):</label>
+    <input type="file" id="topicPhotoInput" accept="image/*" />
+  </div>
+
+  <div class="field">
+    <button id="topicDownloadBtn" type="button">Download Slide</button>
+    <button id="topicShareBtn" type="button">Share to Instagram</button>
+    <span id="topicShareStatus" class="hint"></span>
+  </div>
+</section>
+
+<section class="preview">
+  <div class="slide-wrap">
+    <canvas id="canvasTopic" width="1080" height="1350"></canvas>
+    <p>topic-slide.png</p>
+  </div>
+</section>
+
+<hr />
+
 <h2>Post-Walk Thank You Post</h2>
 <p class="hint">A single, one-off image to post after a walk — same look as the carousel, different photo/dog every time.</p>
 
