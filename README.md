@@ -20,7 +20,14 @@ carousel — a one-off single image (same brand look, cream background) for
 posting right after a walk: upload today's photo, set the dog's name and a
 short blurb about the walk, and it renders a "Thank you for walking with me
 today, {name}!" post with a business footer (contact info + "Book your next
-walk!"). Click **Download Post** to export it.
+walk!"). Click **Download Post** to export it, or **Share to Instagram** to
+open the phone's native share sheet with the image pre-loaded (uses the Web
+Share API — only works on a mobile browser like Safari on iPhone or Chrome
+on Android; on desktop it shows a message pointing to Download Post instead).
+This isn't a fully-automatic post — Instagram still requires a manual tap to
+publish once the share sheet opens, since Instagram's real auto-posting API
+requires converting to a Business account and registering a Meta Developer
+App, which is a bigger one-time setup outside the scope of this tool.
 
 Everything else runs in the browser — no backend, no build step, no database.
 

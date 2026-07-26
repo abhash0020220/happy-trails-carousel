@@ -429,6 +429,8 @@ const postDogNameEl = document.getElementById("postDogName");
 const postPhotoInputEl = document.getElementById("postPhotoInput");
 const postBlurbEl = document.getElementById("postBlurb");
 const postDownloadBtn = document.getElementById("postDownloadBtn");
+const postShareBtn = document.getElementById("postShareBtn");
+const postShareStatusEl = document.getElementById("postShareStatus");
 
 let currentPhotoImg = null;
 let currentPostPhotoImg = null;
@@ -584,6 +586,38 @@ postDownloadBtn.addEventListener("click", async () => {
   renderAll();
   const name = (postDogNameEl.value || "dog").trim().toLowerCase().replace(/[^a-z0-9]+/g, "-");
   await downloadCanvas(canvasPost, `post-thank-you-${name || "dog"}.png`);
+});
+
+function canvasToBlob(canvas) {
+  return new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
+}
+
+postShareBtn.addEventListener("click", async () => {
+  renderAll();
+  const name = (postDogNameEl.value || "dog").trim().toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  const blob = await canvasToBlob(canvasPost);
+  const file = new File([blob], `post-thank-you-${name || "dog"}.png`, { type: "image/png" });
+
+  const shareData = {
+    files: [file],
+    title: "Happy Trails Dog Walking",
+    text: `Thank you for walking with me today, ${postDogNameEl.value || "pup"}! 🐾`,
+  };
+
+  if (navigator.canShare && navigator.canShare(shareData)) {
+    try {
+      await navigator.share(shareData);
+      postShareStatusEl.textContent = "";
+    } catch (err) {
+      // AbortError just means the user canceled the share sheet — not an error to surface
+      if (err.name !== "AbortError") {
+        postShareStatusEl.textContent = `Share failed: ${err.message}`;
+      }
+    }
+  } else {
+    postShareStatusEl.textContent =
+      "Sharing isn't supported here (this needs a phone browser, e.g. Safari on iPhone or Chrome on Android). Use Download Post instead, then open Instagram and post the saved image manually.";
+  }
 });
 
 // ---------- init ----------
