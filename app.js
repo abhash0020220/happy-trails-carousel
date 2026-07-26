@@ -20,6 +20,9 @@ const MISSION_TEXT =
 const SERVICES_TEXT =
   "We offer walking, visiting for feeding, water, and pets, and short-term dogsitting";
 const RATES_TEXT = "$15/walk, $15/visit for water, food, playtime";
+const PHONE_TEXT = "669-250-9410";
+const EMAIL_LINE1 = "happytrailspetcare365";
+const EMAIL_LINE2 = "@gmail.com";
 
 const HOOKS = [
   "Looking for a dog walker in the Cambrian area?",
@@ -281,6 +284,89 @@ function drawSlide2(ctx, photoImg, dogName) {
   drawCurlyArrow(ctx, labelX + 10, labelY + 30);
 }
 
+// ---------- Post-walk "thank you" post (single slide) ----------
+
+function drawPostSlide(ctx, photoImg, dogName, blurb) {
+  drawFrame(ctx, CREAM);
+
+  const cx = W / 2;
+  const name = dogName || "pup";
+
+  // photo, large and centered near the top
+  const photoW = 650;
+  const photoH = 580;
+  const photoX = cx - photoW / 2;
+  const photoY = 110;
+  const radius = 28;
+
+  ctx.save();
+  roundRect(ctx, photoX, photoY, photoW, photoH, radius);
+  ctx.clip();
+  if (photoImg) {
+    const ir = photoImg.width / photoImg.height;
+    const fr = photoW / photoH;
+    let dw, dh, dx, dy;
+    if (ir > fr) {
+      dh = photoH;
+      dw = dh * ir;
+      dx = photoX - (dw - photoW) / 2;
+      dy = photoY;
+    } else {
+      dw = photoW;
+      dh = dw / ir;
+      dx = photoX;
+      dy = photoY - (dh - photoH) / 2;
+    }
+    ctx.drawImage(photoImg, dx, dy, dw, dh);
+  } else {
+    ctx.fillStyle = "#DDD";
+    ctx.fillRect(photoX, photoY, photoW, photoH);
+  }
+  ctx.restore();
+
+  ctx.save();
+  roundRect(ctx, photoX, photoY, photoW, photoH, radius);
+  ctx.strokeStyle = GREEN;
+  ctx.lineWidth = 14;
+  ctx.stroke();
+  ctx.restore();
+
+  const maxWidth = W - BORDER * 2 - 100;
+  let y = photoY + photoH + 90;
+
+  // headline: "Thank you for walking with me today, {name}!"
+  ctx.fillStyle = GREEN;
+  ctx.textAlign = "center";
+  ctx.font = `800 50px "${FONT}"`;
+  const headlineLines = wrapText(ctx, `Thank you for walking with me today, ${name}!`, maxWidth);
+  const headlineLineHeight = 60;
+  y = drawCenteredLines(ctx, headlineLines, cx, y, headlineLineHeight) + headlineLineHeight + 40;
+
+  // blurb
+  if (blurb && blurb.trim()) {
+    ctx.font = `700 36px "${FONT}"`;
+    const blurbLines = wrapText(ctx, blurb.trim(), maxWidth);
+    y = drawCenteredLines(ctx, blurbLines, cx, y, 46) + 46;
+  }
+
+  // bottom CTA / business footer, anchored near the bottom border
+  const footerSepY = H - 260;
+  ctx.strokeStyle = GREEN;
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.moveTo(cx - 260, footerSepY);
+  ctx.lineTo(cx + 260, footerSepY);
+  ctx.stroke();
+
+  ctx.fillStyle = GREEN;
+  ctx.font = `800 44px "${FONT}"`;
+  ctx.fillText("Book your next walk!", cx, H - 195);
+
+  ctx.font = `700 34px "${FONT}"`;
+  ctx.fillText(PHONE_TEXT, cx, H - 140);
+  ctx.fillText(`${EMAIL_LINE1}${EMAIL_LINE2}`, cx, H - 95);
+}
+
 // ---------- Slide 3 (fixed, never changes) ----------
 
 function drawSlide3(ctx) {
@@ -296,13 +382,13 @@ function drawSlide3(ctx) {
 
   y += 150;
   ctx.font = `800 58px "${FONT}"`;
-  ctx.fillText("669-250-9410", cx, y);
+  ctx.fillText(PHONE_TEXT, cx, y);
 
   y += 150;
   ctx.font = `800 52px "${FONT}"`;
-  ctx.fillText("happytrailspetcare365", cx, y);
+  ctx.fillText(EMAIL_LINE1, cx, y);
   y += 62;
-  ctx.fillText("@gmail.com", cx, y);
+  ctx.fillText(EMAIL_LINE2, cx, y);
 
   y += 130;
   ctx.font = `800 60px "${FONT}"`;
@@ -322,9 +408,11 @@ function drawSlide3(ctx) {
 const canvas1 = document.getElementById("canvas1");
 const canvas2 = document.getElementById("canvas2");
 const canvas3 = document.getElementById("canvas3");
+const canvasPost = document.getElementById("canvasPost");
 const ctx1 = canvas1.getContext("2d");
 const ctx2 = canvas2.getContext("2d");
 const ctx3 = canvas3.getContext("2d");
+const ctxPost = canvasPost.getContext("2d");
 
 const hookTextEl = document.getElementById("hookText");
 const hookPosEl = document.getElementById("hookPos");
@@ -337,12 +425,22 @@ const captionBtn = document.getElementById("captionBtn");
 const copyCaptionBtn = document.getElementById("copyCaptionBtn");
 const captionStatusEl = document.getElementById("captionStatus");
 
+const postDogNameEl = document.getElementById("postDogName");
+const postPhotoInputEl = document.getElementById("postPhotoInput");
+const postBlurbEl = document.getElementById("postBlurb");
+const postDownloadBtn = document.getElementById("postDownloadBtn");
+
 let currentPhotoImg = null;
+let currentPostPhotoImg = null;
 const placeholderPhoto = new Image();
 placeholderPhoto.src = "placeholder-dog.png";
 placeholderPhoto.onload = () => {
   if (!currentPhotoImg) {
     currentPhotoImg = placeholderPhoto;
+    renderAll();
+  }
+  if (!currentPostPhotoImg) {
+    currentPostPhotoImg = placeholderPhoto;
     renderAll();
   }
 };
@@ -362,6 +460,7 @@ function renderAll() {
   drawSlide1(ctx1, hookTextEl.value || HOOKS[getRotationIndex()]);
   drawSlide2(ctx2, currentPhotoImg, dogNameEl.value);
   drawSlide3(ctx3);
+  drawPostSlide(ctxPost, currentPostPhotoImg, postDogNameEl.value, postBlurbEl.value);
 }
 
 shuffleBtn.addEventListener("click", () => {
@@ -389,6 +488,24 @@ photoInputEl.addEventListener("change", (e) => {
 });
 
 hookTextEl.addEventListener("input", renderAll);
+
+postDogNameEl.addEventListener("input", renderAll);
+postBlurbEl.addEventListener("input", renderAll);
+
+postPhotoInputEl.addEventListener("change", (e) => {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const img = new Image();
+    img.onload = () => {
+      currentPostPhotoImg = img;
+      renderAll();
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+});
 
 async function generateCaption() {
   captionStatusEl.textContent = "Generating...";
@@ -461,6 +578,12 @@ generateBtn.addEventListener("click", async () => {
   setRotationIndex(next);
   loadCurrentHookIntoBox();
   renderAll();
+});
+
+postDownloadBtn.addEventListener("click", async () => {
+  renderAll();
+  const name = (postDogNameEl.value || "dog").trim().toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  await downloadCanvas(canvasPost, `post-thank-you-${name || "dog"}.png`);
 });
 
 // ---------- init ----------

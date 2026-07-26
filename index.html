@@ -58,6 +58,39 @@
   </div>
 </section>
 
+<hr />
+
+<h2>Post-Walk Thank You Post</h2>
+<p class="hint">A single, one-off image to post after a walk — same look as the carousel, different photo/dog every time.</p>
+
+<section class="controls">
+  <div class="field">
+    <label for="postDogName">Dog's name:</label>
+    <input type="text" id="postDogName" value="Louie" />
+  </div>
+
+  <div class="field">
+    <label for="postPhotoInput">Upload photo from today's walk:</label>
+    <input type="file" id="postPhotoInput" accept="image/*" />
+  </div>
+
+  <div class="field">
+    <label for="postBlurb">Blurb about the walk:</label>
+    <textarea id="postBlurb" rows="3">You were such a great dog to walk today — full of energy and good listening the whole way!</textarea>
+  </div>
+
+  <div class="field">
+    <button id="postDownloadBtn" type="button">Download Post</button>
+  </div>
+</section>
+
+<section class="preview">
+  <div class="slide-wrap">
+    <canvas id="canvasPost" width="1080" height="1350"></canvas>
+    <p>post-thank-you.png</p>
+  </div>
+</section>
+
 <script src="app.js"></script>
 </body>
 </html>

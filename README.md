@@ -15,6 +15,13 @@ Clicking **Generate & Download All 3** renders three 1080×1350 PNGs on
 A **Generate Caption** button also writes an Instagram caption (via Gemini,
 see below) that pulls in the current hook, services, rates, and dog name.
 
+There's also a separate **Post-Walk Thank You Post** section below the
+carousel — a one-off single image (same brand look, cream background) for
+posting right after a walk: upload today's photo, set the dog's name and a
+short blurb about the walk, and it renders a "Thank you for walking with me
+today, {name}!" post with a business footer (contact info + "Book your next
+walk!"). Click **Download Post** to export it.
+
 Everything else runs in the browser — no backend, no build step, no database.
 
 ## Adding or editing preset hooks
