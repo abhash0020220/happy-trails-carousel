@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Happy Trails Dog Walking — Carousel Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<h1>Happy Trails Dog Walking — Instagram Carousel Generator</h1>
+
+<section class="controls">
+  <div class="field">
+    <label for="hookText">Hook headline (slide 1) — editable, doesn't affect rotation:</label>
+    <textarea id="hookText" rows="2"></textarea>
+    <button id="shuffleBtn" type="button">Shuffle to next preset hook</button>
+    <span id="hookPos" class="hint"></span>
+  </div>
+
+  <div class="field">
+    <label for="dogName">Dog's name (slide 2):</label>
+    <input type="text" id="dogName" value="Louie" />
+  </div>
+
+  <div class="field">
+    <label for="photoInput">Upload photo (slide 2):</label>
+    <input type="file" id="photoInput" accept="image/*" />
+  </div>
+
+  <div class="field">
+    <button id="generateBtn" type="button">Generate &amp; Download All 3</button>
+  </div>
+</section>
+
+<section class="preview">
+  <div class="slide-wrap">
+    <canvas id="canvas1" width="1080" height="1350"></canvas>
+    <p>slide-1-hook.png</p>
+  </div>
+  <div class="slide-wrap">
+    <canvas id="canvas2" width="1080" height="1350"></canvas>
+    <p>slide-2-services.png</p>
+  </div>
+  <div class="slide-wrap">
+    <canvas id="canvas3" width="1080" height="1350"></canvas>
+    <p>slide-3-contact.png</p>
+  </div>
+</section>
+
+<script src="app.js"></script>
+</body>
+</html>
