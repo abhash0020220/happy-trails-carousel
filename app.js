@@ -5,9 +5,6 @@
 const GREEN = "#135C48";
 const CREAM = "#FBF3DC";
 const GOLD = "#EFD389";
-const TAN = "#D9A45C";
-const TAN_DARK = "#B5793A";
-const LEASH_RED = "#C0392B";
 
 const W = 1080;
 const H = 1350;
@@ -99,7 +96,15 @@ function drawFrame(ctx, bgColor) {
   ctx.strokeRect(BORDER / 2, BORDER / 2, W - BORDER, H - BORDER);
 }
 
-// ---------- dog logo (drawn directly with canvas paths, no external asset) ----------
+// ---------- dog logo (raster artwork supplied by the brand, drawn onto the badge) ----------
+
+const dogLogoImg = new Image();
+let dogLogoLoaded = false;
+dogLogoImg.src = "dog-logo.png";
+dogLogoImg.onload = () => {
+  dogLogoLoaded = true;
+  if (typeof renderAll === "function") renderAll();
+};
 
 function drawDogBadge(ctx, cx, cy, r) {
   // badge circle
@@ -110,116 +115,15 @@ function drawDogBadge(ctx, cx, cy, r) {
   ctx.fill();
   ctx.restore();
 
-  // running dog silhouette, drawn relative to badge (offset up so text fits below)
-  ctx.save();
-  const ox = cx - 90;
-  const oy = cy - 90;
-  const s = r / 170; // scale factor so art fits nicely inside circle
+  if (!dogLogoLoaded) return;
 
-  ctx.translate(ox, oy);
-  ctx.scale(s, s);
-
-  // back legs (two, running pose) — drawn first so the body overlaps them
-  ctx.beginPath();
-  ctx.moveTo(65, 88);
-  ctx.quadraticCurveTo(55, 125, 32, 150);
-  ctx.lineTo(48, 156);
-  ctx.quadraticCurveTo(75, 128, 83, 92);
-  ctx.closePath();
-  ctx.fillStyle = TAN_DARK;
-  ctx.fill();
-
-  // tail (curved, tapering, attached to rear of body)
-  ctx.beginPath();
-  ctx.moveTo(55, 55);
-  ctx.quadraticCurveTo(15, 35, 5, -5);
-  ctx.quadraticCurveTo(25, -15, 45, 10);
-  ctx.quadraticCurveTo(60, 30, 68, 58);
-  ctx.closePath();
-  ctx.fillStyle = TAN_DARK;
-  ctx.fill();
-
-  // body
-  ctx.beginPath();
-  ctx.moveTo(45, 65);
-  ctx.quadraticCurveTo(35, 32, 78, 25);
-  ctx.quadraticCurveTo(145, 12, 178, 42);
-  ctx.quadraticCurveTo(192, 58, 176, 82);
-  ctx.quadraticCurveTo(120, 98, 72, 93);
-  ctx.quadraticCurveTo(48, 88, 45, 65);
-  ctx.closePath();
-  ctx.fillStyle = TAN;
-  ctx.fill();
-
-  // front legs
-  ctx.beginPath();
-  ctx.moveTo(112, 90);
-  ctx.quadraticCurveTo(110, 124, 96, 150);
-  ctx.lineTo(112, 156);
-  ctx.quadraticCurveTo(130, 122, 130, 88);
-  ctx.closePath();
-  ctx.fillStyle = TAN_DARK;
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.moveTo(158, 83);
-  ctx.quadraticCurveTo(163, 118, 148, 150);
-  ctx.lineTo(164, 156);
-  ctx.quadraticCurveTo(184, 118, 180, 80);
-  ctx.closePath();
-  ctx.fillStyle = TAN;
-  ctx.fill();
-
-  // ear (behind head)
-  ctx.beginPath();
-  ctx.moveTo(178, 18);
-  ctx.quadraticCurveTo(160, 2, 168, 28);
-  ctx.quadraticCurveTo(176, 38, 188, 26);
-  ctx.closePath();
-  ctx.fillStyle = TAN_DARK;
-  ctx.fill();
-
-  // head
-  ctx.beginPath();
-  ctx.arc(195, 38, 30, 0, Math.PI * 2);
-  ctx.fillStyle = TAN;
-  ctx.fill();
-
-  // snout
-  ctx.beginPath();
-  ctx.ellipse(221, 46, 15, 10, 0.3, 0, Math.PI * 2);
-  ctx.fillStyle = TAN;
-  ctx.fill();
-
-  // nose
-  ctx.beginPath();
-  ctx.arc(232, 44, 4, 0, Math.PI * 2);
-  ctx.fillStyle = GREEN;
-  ctx.fill();
-
-  // eye
-  ctx.beginPath();
-  ctx.arc(205, 30, 3, 0, Math.PI * 2);
-  ctx.fillStyle = GREEN;
-  ctx.fill();
-
-  // collar (ring around neck, drawn on top of head/body seam)
-  ctx.beginPath();
-  ctx.ellipse(192, 60, 14, 8, -0.3, 0, Math.PI * 2);
-  ctx.strokeStyle = LEASH_RED;
-  ctx.lineWidth = 6;
-  ctx.stroke();
-
-  // leash trailing up and back from the collar
-  ctx.beginPath();
-  ctx.moveTo(200, 55);
-  ctx.quadraticCurveTo(235, 20, 215, -25);
-  ctx.strokeStyle = LEASH_RED;
-  ctx.lineWidth = 5;
-  ctx.lineCap = "round";
-  ctx.stroke();
-
-  ctx.restore();
+  // fit the artwork into the upper portion of the circle, leaving room
+  // below for the "Happy Trails / Dog Walking" wordmark
+  const artW = r * 1.27;
+  const artH = artW * (dogLogoImg.height / dogLogoImg.width);
+  const artX = cx - artW / 2;
+  const artY = cy - r * 0.72;
+  ctx.drawImage(dogLogoImg, artX, artY, artW, artH);
 }
 
 // ---------- curly arrow (hand-drawn style) ----------
