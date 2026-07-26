@@ -11,6 +11,16 @@ const H = 1350;
 const BORDER = 40;
 const FONT = "Baloo 2";
 
+// Cloudflare Worker that holds the Gemini API key server-side and proxies
+// caption requests. See worker/ for the source.
+const CAPTION_API_URL = "https://happy-trails-caption-proxy.happytrailsdogwalking.workers.dev";
+
+const MISSION_TEXT =
+  "We're a dog walking and pet care company run by local teens in the Cambrian area.";
+const SERVICES_TEXT =
+  "We offer walking, visiting for feeding, water, and pets, and short-term dogsitting";
+const RATES_TEXT = "$15/walk, $15/visit for water, food, playtime";
+
 const HOOKS = [
   "Looking for a dog walker in the Cambrian area?",
   "Going out of town? Your dog doesn't have to be alone.",
@@ -185,9 +195,7 @@ function drawSlide1(ctx, hookText) {
 
   // fixed mission statement
   ctx.font = `800 42px "${FONT}"`;
-  const missionText =
-    "We're a dog walking and pet care company run by local teens in the Cambrian area.";
-  const missionLines = wrapText(ctx, missionText, maxWidth);
+  const missionLines = wrapText(ctx, MISSION_TEXT, maxWidth);
   drawCenteredLines(ctx, missionLines, cx, y, 52);
 }
 
@@ -202,9 +210,7 @@ function drawSlide2(ctx, photoImg, dogName) {
   ctx.fillStyle = GREEN;
   ctx.textAlign = "left";
   ctx.font = `800 52px "${FONT}"`;
-  const headline =
-    "We offer walking, visiting for feeding, water, and pets, and short-term dogsitting";
-  const headlineLines = wrapText(ctx, headline, maxLeftWidth);
+  const headlineLines = wrapText(ctx, SERVICES_TEXT, maxLeftWidth);
   let y = 150;
   const lh1 = 62;
   for (const line of headlineLines) {
@@ -326,6 +332,10 @@ const shuffleBtn = document.getElementById("shuffleBtn");
 const dogNameEl = document.getElementById("dogName");
 const photoInputEl = document.getElementById("photoInput");
 const generateBtn = document.getElementById("generateBtn");
+const captionTextEl = document.getElementById("captionText");
+const captionBtn = document.getElementById("captionBtn");
+const copyCaptionBtn = document.getElementById("copyCaptionBtn");
+const captionStatusEl = document.getElementById("captionStatus");
 
 let currentPhotoImg = null;
 const placeholderPhoto = new Image();
@@ -379,6 +389,48 @@ photoInputEl.addEventListener("change", (e) => {
 });
 
 hookTextEl.addEventListener("input", renderAll);
+
+async function generateCaption() {
+  captionStatusEl.textContent = "Generating...";
+  captionBtn.disabled = true;
+  try {
+    const res = await fetch(CAPTION_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        hook: hookTextEl.value || HOOKS[getRotationIndex()],
+        mission: MISSION_TEXT,
+        services: SERVICES_TEXT,
+        rates: RATES_TEXT,
+        dogName: dogNameEl.value || "our pup",
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+    captionTextEl.value = data.caption;
+    captionStatusEl.textContent = "";
+  } catch (err) {
+    captionStatusEl.textContent = `Error: ${err.message}`;
+  } finally {
+    captionBtn.disabled = false;
+  }
+}
+
+captionBtn.addEventListener("click", generateCaption);
+
+copyCaptionBtn.addEventListener("click", async () => {
+  if (!captionTextEl.value) return;
+  try {
+    await navigator.clipboard.writeText(captionTextEl.value);
+    captionStatusEl.textContent = "Copied!";
+    setTimeout(() => {
+      if (captionStatusEl.textContent === "Copied!") captionStatusEl.textContent = "";
+    }, 1500);
+  } catch {
+    captionTextEl.select();
+    document.execCommand("copy");
+  }
+});
 
 function downloadCanvas(canvas, filename) {
   return new Promise((resolve) => {

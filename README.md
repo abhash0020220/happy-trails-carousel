@@ -12,7 +12,10 @@ Clicking **Generate & Download All 3** renders three 1080×1350 PNGs on
 - `slide-2-services.png` — services, rates, and a swappable dog photo/name
 - `slide-3-contact.png` — contact info, identical on every generation
 
-Everything runs in the browser — no backend, no build step, no database.
+A **Generate Caption** button also writes an Instagram caption (via Gemini,
+see below) that pulls in the current hook, services, rates, and dog name.
+
+Everything else runs in the browser — no backend, no build step, no database.
 
 ## Adding or editing preset hooks
 
@@ -53,6 +56,44 @@ python3 -m http.server 8000
 
 Then open `http://localhost:8000`.
 
+## AI caption generation
+
+The **Generate Caption** button calls a small Cloudflare Worker
+(`worker/src/index.js`) that holds a Gemini API key server-side and proxies a
+fixed prompt built from the carousel's own content (hook, mission, services,
+rates, dog name). The key is never exposed to the browser or committed to
+this repo.
+
+- Worker source: `worker/src/index.js`
+- Deployed at: `https://happy-trails-caption-proxy.happytrailsdogwalking.workers.dev`
+- The frontend's `CAPTION_API_URL` constant in `app.js` points at that URL.
+
+**To redeploy the Worker** (e.g. after editing the prompt):
+
+```bash
+cd worker
+npx wrangler deploy
+```
+
+**To change the Gemini API key** (e.g. if it's rotated or revoked):
+
+```bash
+cd worker
+npx wrangler secret put GEMINI_API_KEY
+```
+
+Note: if your Google account is on a Workspace/organization policy, keys
+created at aistudio.google.com/apikey may come back as "service-account-bound"
+keys (they look like `AQ.Ab8...` instead of the classic `AIzaSy...` format).
+Those still work with this Worker as-is — no code changes needed.
+
+**Allowed origins**: the Worker only accepts requests from the `ALLOWED_ORIGINS`
+list at the top of `worker/src/index.js` (the GitHub Pages URL + localhost for
+local dev). Add any other origin you serve this site from to that list and
+redeploy.
+
 ## Deployment
 
-This site is deployed to GitHub Pages from the `main` branch (`/` root).
+This site is deployed to GitHub Pages from the `main` branch (`/` root). The
+caption proxy is a separate deployment (a Cloudflare Worker, see above) since
+GitHub Pages can't hold a secret API key.
