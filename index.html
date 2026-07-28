@@ -65,23 +65,29 @@
   <div class="field colors">
     <span>Slide 1 colors:</span>
     <label for="slide1BgColor">Background</label>
-    <input type="color" id="slide1BgColor" value="#efd389" />
+    <input type="color" id="slide1BgColor" value="#efd389" data-default="#efd389" />
+    <button type="button" class="reset-color-btn" data-target="slide1BgColor">Reset</button>
     <label for="slide1AccentColor">Border/text</label>
-    <input type="color" id="slide1AccentColor" value="#135c48" />
+    <input type="color" id="slide1AccentColor" value="#135c48" data-default="#135c48" />
+    <button type="button" class="reset-color-btn" data-target="slide1AccentColor">Reset</button>
   </div>
   <div class="field colors">
     <span>Slide 2 colors:</span>
     <label for="slide2BgColor">Background</label>
-    <input type="color" id="slide2BgColor" value="#fbf3dc" />
+    <input type="color" id="slide2BgColor" value="#fbf3dc" data-default="#fbf3dc" />
+    <button type="button" class="reset-color-btn" data-target="slide2BgColor">Reset</button>
     <label for="slide2AccentColor">Border/text</label>
-    <input type="color" id="slide2AccentColor" value="#135c48" />
+    <input type="color" id="slide2AccentColor" value="#135c48" data-default="#135c48" />
+    <button type="button" class="reset-color-btn" data-target="slide2AccentColor">Reset</button>
   </div>
   <div class="field colors">
     <span>Slide 3 colors:</span>
     <label for="slide3BgColor">Background</label>
-    <input type="color" id="slide3BgColor" value="#fbf3dc" />
+    <input type="color" id="slide3BgColor" value="#fbf3dc" data-default="#fbf3dc" />
+    <button type="button" class="reset-color-btn" data-target="slide3BgColor">Reset</button>
     <label for="slide3AccentColor">Border/text</label>
-    <input type="color" id="slide3AccentColor" value="#135c48" />
+    <input type="color" id="slide3AccentColor" value="#135c48" data-default="#135c48" />
+    <button type="button" class="reset-color-btn" data-target="slide3AccentColor">Reset</button>
   </div>
 </section>
 
@@ -108,12 +114,12 @@
 
 <hr />
 
-<h2>Random Topic Slide</h2>
-<p class="hint">A single slide about the business (About Us, What We Do, Pricing, Meet the Walkers, etc.) — hit shuffle for a random topic to start from, then edit freely.</p>
+<h2>Topic Slide</h2>
+<p class="hint">A single slide about the business (About Us, What We Do, Pricing, Meet the Walkers, etc.) — click Next Topic to cycle through each kind in order, then edit freely. Position is remembered across visits.</p>
 
 <section class="controls">
   <div class="field">
-    <button id="topicShuffleBtn" type="button">Shuffle Random Topic</button>
+    <button id="topicShuffleBtn" type="button">Next Topic</button>
     <span id="topicLabel" class="hint"></span>
   </div>
 
@@ -141,9 +147,11 @@
   <div class="field colors">
     <span>Colors:</span>
     <label for="topicBgColor">Background</label>
-    <input type="color" id="topicBgColor" value="#fbf3dc" />
+    <input type="color" id="topicBgColor" value="#fbf3dc" data-default="#fbf3dc" />
+    <button type="button" class="reset-color-btn" data-target="topicBgColor">Reset</button>
     <label for="topicAccentColor">Border/text</label>
-    <input type="color" id="topicAccentColor" value="#135c48" />
+    <input type="color" id="topicAccentColor" value="#135c48" data-default="#135c48" />
+    <button type="button" class="reset-color-btn" data-target="topicAccentColor">Reset</button>
   </div>
 </section>
 
@@ -184,9 +192,11 @@
   <div class="field colors">
     <span>Colors:</span>
     <label for="postBgColor">Background</label>
-    <input type="color" id="postBgColor" value="#fbf3dc" />
+    <input type="color" id="postBgColor" value="#fbf3dc" data-default="#fbf3dc" />
+    <button type="button" class="reset-color-btn" data-target="postBgColor">Reset</button>
     <label for="postAccentColor">Border/text</label>
-    <input type="color" id="postAccentColor" value="#135c48" />
+    <input type="color" id="postAccentColor" value="#135c48" data-default="#135c48" />
+    <button type="button" class="reset-color-btn" data-target="postAccentColor">Reset</button>
   </div>
 </section>
 

@@ -17,15 +17,15 @@ see below) that pulls in the current hook, services, rates, and dog name.
 Each of the 3 carousel slides also has its own **Share to Instagram** button
 (same Web Share API behavior as described below).
 
-Between the carousel and the post-walk section is a **Random Topic Slide**
-generator — a single business-info slide (About Us, What We Do, Pricing, Meet
-the Walkers, etc.) with a contact-info footer (business name, phone, email),
-matching slide 3's contact block. Click **Shuffle Random Topic** to pull a
-random preset title + body from the `TOPICS` array in `app.js` (edit that
-array to add or change topics), then freely edit the title, body text, and
-optionally attach a photo before downloading or sharing. Unlike the hook
-rotation on slide 1, this picks a topic at random rather than cycling in
-sequence, since the ask was specifically for randomness here.
+Between the carousel and the post-walk section is a **Topic Slide** generator
+— a single business-info slide (About Us, What We Do, Pricing, Meet the
+Walkers, etc.) with a contact-info footer (business name, phone, email),
+matching slide 3's contact block. Click **Next Topic** to cycle sequentially
+through the `TOPICS` array in `app.js` (edit that array to add or change
+topics) — same rotation pattern as the slide 1 hook headline, with its own
+`localStorage` position (key `htdw_topic_index`) that survives reloads. Edit
+the title, body text, and optionally attach a photo before downloading or
+sharing.
 
 There's also a separate **Post-Walk Thank You Post** section below the
 carousel — a one-off single image (same brand look, cream background) for
@@ -49,19 +49,20 @@ At the very top of the page is a **Business Info** section — business name
 (split into a large line + small tagline, e.g. "Happy Trails" / "Dog
 Walking"), phone, and email. These four fields drive every place that info
 appears across all five slide types: the slide 1 logo badge, slide 3's
-contact block, and the footers on the Random Topic and Post-Walk slides.
+contact block, and the footers on the Topic and Post-Walk slides.
 Change it once at the top and it applies everywhere — no need to edit each
 slide separately. These fields are saved to `localStorage` (key
 `htdw_biz_info`) so they persist across page reloads.
 
 ## Per-slide color editor
 
-Each slide section (the 3 carousel slides, Random Topic, and Post-Walk) has
+Each slide section (the 3 carousel slides, Topic, and Post-Walk) has
 its own **Background** and **Border/text** color pickers, defaulting to the
-brand palette below. Changing them only affects that one slide — e.g. you
-can make the Random Topic slide a different color scheme while the carousel
-stays on-brand. Colors are session-only (not saved to `localStorage`) so
-every fresh page load starts back at the brand defaults.
+brand palette below, each with a small **Reset** button next to it that
+restores that one picker's original default. Changing them only affects that
+one slide — e.g. you can make the Topic slide a different color scheme while
+the carousel stays on-brand. Colors are session-only (not saved to
+`localStorage`) so every fresh page load starts back at the brand defaults.
 
 ## Adding or editing preset hooks
 

@@ -46,6 +46,12 @@ h1 {
   vertical-align: middle;
 }
 
+.field.colors .reset-color-btn {
+  font-size: 11px;
+  padding: 2px 6px;
+  margin-right: 8px;
+}
+
 .field {
   margin-bottom: 12px;
 }

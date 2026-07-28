@@ -94,6 +94,18 @@ function setRotationIndex(i) {
   localStorage.setItem(ROTATION_KEY, String(i));
 }
 
+const TOPIC_ROTATION_KEY = "htdw_topic_index";
+
+function getTopicRotationIndex() {
+  const raw = localStorage.getItem(TOPIC_ROTATION_KEY);
+  const n = raw === null ? 0 : parseInt(raw, 10);
+  return Number.isFinite(n) && n >= 0 && n < TOPICS.length ? n : 0;
+}
+
+function setTopicRotationIndex(i) {
+  localStorage.setItem(TOPIC_ROTATION_KEY, String(i));
+}
+
 const BIZ_INFO_KEY = "htdw_biz_info";
 
 function saveBizInfo() {
@@ -699,15 +711,18 @@ function renderAll() {
   );
 }
 
-function pickRandomTopic() {
-  const topic = TOPICS[Math.floor(Math.random() * TOPICS.length)];
+function loadCurrentTopicIntoBox() {
+  const i = getTopicRotationIndex();
+  const topic = TOPICS[i];
   topicTitleEl.value = topic.title;
   topicBodyEl.value = topic.body;
-  topicLabelEl.textContent = `(${topic.label})`;
+  topicLabelEl.textContent = `(${topic.label} — ${i + 1} of ${TOPICS.length})`;
 }
 
 topicShuffleBtn.addEventListener("click", () => {
-  pickRandomTopic();
+  const next = (getTopicRotationIndex() + 1) % TOPICS.length;
+  setTopicRotationIndex(next);
+  loadCurrentTopicIntoBox();
   renderAll();
 });
 
@@ -755,6 +770,14 @@ shuffleBtn.addEventListener("click", () => {
   topicBgColorEl,
   topicAccentColorEl,
 ].forEach((el) => el.addEventListener("input", renderAll));
+
+document.querySelectorAll(".reset-color-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const input = document.getElementById(btn.dataset.target);
+    input.value = input.dataset.default;
+    renderAll();
+  });
+});
 
 dogNameEl.addEventListener("input", renderAll);
 
@@ -949,7 +972,7 @@ topicShareBtn.addEventListener("click", async () => {
 async function init() {
   loadBizInfo();
   loadCurrentHookIntoBox();
-  pickRandomTopic();
+  loadCurrentTopicIntoBox();
   renderAll(); // draw immediately with fallback font so the page isn't blank
 
   // canvas text doesn't trigger the browser's automatic webfont fetch, so
