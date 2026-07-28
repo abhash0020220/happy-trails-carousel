@@ -15,6 +15,37 @@ h1 {
   margin-bottom: 20px;
 }
 
+.controls h2 {
+  font-size: 15px;
+  margin: 0 0 12px;
+}
+
+.field.colors {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.field.colors span {
+  font-weight: bold;
+  margin-right: 4px;
+}
+
+.field.colors label {
+  display: inline;
+  font-weight: normal;
+  margin: 0;
+}
+
+.field.colors input[type="color"] {
+  width: 36px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid #999;
+  vertical-align: middle;
+}
+
 .field {
   margin-bottom: 12px;
 }

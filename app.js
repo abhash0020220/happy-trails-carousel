@@ -20,9 +20,8 @@ const MISSION_TEXT =
 const SERVICES_TEXT =
   "We offer walking, visiting for feeding, water, and pets, and short-term dogsitting";
 const RATES_TEXT = "$15/walk, $15/visit for water, food, playtime";
-const PHONE_TEXT = "669-250-9410";
-const EMAIL_LINE1 = "happytrailspetcare365";
-const EMAIL_LINE2 = "@gmail.com";
+const PHONE_TEXT = "669-250-9410"; // fallback default; the Business Info section overrides this
+const DEFAULT_EMAIL = "happytrailspetcare365@gmail.com"; // fallback default; overridden by Business Info
 
 const HOOKS = [
   "Looking for a dog walker in the Cambrian area?",
@@ -95,6 +94,34 @@ function setRotationIndex(i) {
   localStorage.setItem(ROTATION_KEY, String(i));
 }
 
+const BIZ_INFO_KEY = "htdw_biz_info";
+
+function saveBizInfo() {
+  localStorage.setItem(
+    BIZ_INFO_KEY,
+    JSON.stringify({
+      name1: bizNameLine1El.value,
+      name2: bizNameLine2El.value,
+      phone: bizPhoneEl.value,
+      email: bizEmailEl.value,
+    })
+  );
+}
+
+function loadBizInfo() {
+  const raw = localStorage.getItem(BIZ_INFO_KEY);
+  if (!raw) return;
+  try {
+    const info = JSON.parse(raw);
+    if (info.name1) bizNameLine1El.value = info.name1;
+    if (info.name2) bizNameLine2El.value = info.name2;
+    if (info.phone) bizPhoneEl.value = info.phone;
+    if (info.email) bizEmailEl.value = info.email;
+  } catch {
+    /* ignore corrupt localStorage value */
+  }
+}
+
 // ---------- canvas text helpers ----------
 
 function wrapText(ctx, text, maxWidth) {
@@ -138,11 +165,11 @@ function roundRect(ctx, x, y, w, h, r) {
 
 // ---------- frame ----------
 
-function drawFrame(ctx, bgColor) {
+function drawFrame(ctx, bgColor, accentColor) {
   ctx.clearRect(0, 0, W, H);
   ctx.fillStyle = bgColor;
   ctx.fillRect(0, 0, W, H);
-  ctx.strokeStyle = GREEN;
+  ctx.strokeStyle = accentColor || GREEN;
   ctx.lineWidth = BORDER;
   ctx.strokeRect(BORDER / 2, BORDER / 2, W - BORDER, H - BORDER);
 }
@@ -179,11 +206,11 @@ function drawDogBadge(ctx, cx, cy, r) {
 
 // ---------- curly arrow (hand-drawn style) ----------
 
-function drawCurlyArrow(ctx, x, y) {
+function drawCurlyArrow(ctx, x, y, accent) {
   ctx.save();
   ctx.translate(x, y);
-  ctx.strokeStyle = GREEN;
-  ctx.fillStyle = GREEN;
+  ctx.strokeStyle = accent || GREEN;
+  ctx.fillStyle = accent || GREEN;
   ctx.lineWidth = 7;
   ctx.lineCap = "round";
   ctx.lineJoin = "round";
@@ -211,20 +238,20 @@ function drawCurlyArrow(ctx, x, y) {
 
 // ---------- Slide 1 ----------
 
-function drawSlide1(ctx, hookText) {
-  drawFrame(ctx, GOLD);
+function drawSlide1(ctx, hookText, bizName1, bizName2, bg, accent) {
+  drawFrame(ctx, bg || GOLD, accent);
 
   const cx = W / 2;
   const badgeCy = 415;
   const badgeR = 300;
   drawDogBadge(ctx, cx, badgeCy, badgeR);
 
-  ctx.fillStyle = GREEN;
+  ctx.fillStyle = accent || GREEN;
   ctx.textAlign = "center";
   ctx.font = `800 62px "${FONT}"`;
-  ctx.fillText("Happy Trails", cx, badgeCy + 190);
+  ctx.fillText(bizName1 || "Happy Trails", cx, badgeCy + 190);
   ctx.font = `800 36px "${FONT}"`;
-  ctx.fillText("Dog Walking", cx, badgeCy + 240);
+  ctx.fillText(bizName2 || "Dog Walking", cx, badgeCy + 240);
 
   // rotating hook headline
   let y = badgeCy + badgeR + 100;
@@ -242,13 +269,14 @@ function drawSlide1(ctx, hookText) {
 
 // ---------- Slide 2 ----------
 
-function drawSlide2(ctx, photoImg, dogName) {
-  drawFrame(ctx, CREAM);
+function drawSlide2(ctx, photoImg, dogName, bg, accent) {
+  drawFrame(ctx, bg || CREAM, accent);
+  const accentColor = accent || GREEN;
 
   const leftX = BORDER + 60;
   const maxLeftWidth = 480;
 
-  ctx.fillStyle = GREEN;
+  ctx.fillStyle = accentColor;
   ctx.textAlign = "left";
   ctx.font = `800 52px "${FONT}"`;
   const headlineLines = wrapText(ctx, SERVICES_TEXT, maxLeftWidth);
@@ -306,7 +334,7 @@ function drawSlide2(ctx, photoImg, dogName) {
 
   ctx.save();
   roundRect(ctx, photoX, photoY, photoW, photoH, radius);
-  ctx.strokeStyle = GREEN;
+  ctx.strokeStyle = accentColor;
   ctx.lineWidth = 14;
   ctx.stroke();
   ctx.restore();
@@ -315,17 +343,18 @@ function drawSlide2(ctx, photoImg, dogName) {
   const labelX = leftX;
   const labelY = photoY + 70;
   ctx.textAlign = "left";
-  ctx.fillStyle = GREEN;
+  ctx.fillStyle = accentColor;
   ctx.font = `800 44px "${FONT}"`;
   ctx.fillText(dogName || "Dog", labelX, labelY);
 
-  drawCurlyArrow(ctx, labelX + 10, labelY + 30);
+  drawCurlyArrow(ctx, labelX + 10, labelY + 30, accentColor);
 }
 
 // ---------- Post-walk "thank you" post (single slide) ----------
 
-function drawPostSlide(ctx, photoImg, dogName, blurb) {
-  drawFrame(ctx, CREAM);
+function drawPostSlide(ctx, photoImg, dogName, blurb, phone, email, bg, accent) {
+  drawFrame(ctx, bg || CREAM, accent);
+  const accentColor = accent || GREEN;
 
   const cx = W / 2;
   const name = dogName || "pup";
@@ -364,7 +393,7 @@ function drawPostSlide(ctx, photoImg, dogName, blurb) {
 
   ctx.save();
   roundRect(ctx, photoX, photoY, photoW, photoH, radius);
-  ctx.strokeStyle = GREEN;
+  ctx.strokeStyle = accentColor;
   ctx.lineWidth = 14;
   ctx.stroke();
   ctx.restore();
@@ -373,7 +402,7 @@ function drawPostSlide(ctx, photoImg, dogName, blurb) {
   let y = photoY + photoH + 90;
 
   // headline: "Thank you for walking with me today, {name}!"
-  ctx.fillStyle = GREEN;
+  ctx.fillStyle = accentColor;
   ctx.textAlign = "center";
   ctx.font = `800 50px "${FONT}"`;
   const headlineLines = wrapText(ctx, `Thank you for walking with me today, ${name}!`, maxWidth);
@@ -389,26 +418,27 @@ function drawPostSlide(ctx, photoImg, dogName, blurb) {
 
   // bottom CTA / business footer, anchored near the bottom border
   const footerSepY = H - 260;
-  ctx.strokeStyle = GREEN;
+  ctx.strokeStyle = accentColor;
   ctx.lineWidth = 4;
   ctx.beginPath();
   ctx.moveTo(cx - 260, footerSepY);
   ctx.lineTo(cx + 260, footerSepY);
   ctx.stroke();
 
-  ctx.fillStyle = GREEN;
+  ctx.fillStyle = accentColor;
   ctx.font = `800 44px "${FONT}"`;
   ctx.fillText("Book your next walk!", cx, H - 195);
 
   ctx.font = `700 34px "${FONT}"`;
-  ctx.fillText(PHONE_TEXT, cx, H - 140);
-  ctx.fillText(`${EMAIL_LINE1}${EMAIL_LINE2}`, cx, H - 95);
+  ctx.fillText(phone || PHONE_TEXT, cx, H - 140);
+  ctx.fillText(email || DEFAULT_EMAIL, cx, H - 95);
 }
 
 // ---------- Random topic slide (About Us, Pricing, Meet the Walkers, etc.) ----------
 
-function drawTopicSlide(ctx, photoImg, title, body) {
-  drawFrame(ctx, CREAM);
+function drawTopicSlide(ctx, photoImg, title, body, bizName, phone, email, bg, accent) {
+  drawFrame(ctx, bg || CREAM, accent);
+  const accentColor = accent || GREEN;
 
   const cx = W / 2;
   const maxWidth = W - BORDER * 2 - 100;
@@ -440,7 +470,7 @@ function drawTopicSlide(ctx, photoImg, title, body) {
   // at the point of drawing (baseline ≈ top + ~80% of the line height).
   let topY = startY;
 
-  ctx.fillStyle = GREEN;
+  ctx.fillStyle = accentColor;
   ctx.textAlign = "center";
   ctx.font = `800 64px "${FONT}"`;
   drawCenteredLines(ctx, titleLines, cx, topY + titleLineHeight * 0.8, titleLineHeight);
@@ -473,7 +503,7 @@ function drawTopicSlide(ctx, photoImg, title, body) {
 
     ctx.save();
     roundRect(ctx, photoX, photoY, photoW, photoH, radius);
-    ctx.strokeStyle = GREEN;
+    ctx.strokeStyle = accentColor;
     ctx.lineWidth = 14;
     ctx.stroke();
     ctx.restore();
@@ -481,36 +511,38 @@ function drawTopicSlide(ctx, photoImg, title, body) {
     topY += photoH + gapAfterPhoto;
   }
 
-  ctx.fillStyle = GREEN;
+  ctx.fillStyle = accentColor;
   ctx.textAlign = "center";
   ctx.font = `700 40px "${FONT}"`;
   drawCenteredLines(ctx, bodyLines, cx, topY + bodyLineHeight * 0.8, bodyLineHeight);
 
   // contact-info footer
   const footerSepY = H - 260;
-  ctx.strokeStyle = GREEN;
+  ctx.strokeStyle = accentColor;
   ctx.lineWidth = 4;
   ctx.beginPath();
   ctx.moveTo(cx - 260, footerSepY);
   ctx.lineTo(cx + 260, footerSepY);
   ctx.stroke();
 
-  ctx.fillStyle = GREEN;
+  ctx.fillStyle = accentColor;
   ctx.font = `800 40px "${FONT}"`;
-  ctx.fillText("Happy Trails Dog Walking", cx, H - 195);
+  ctx.fillText(bizName || "Happy Trails Dog Walking", cx, H - 195);
 
   ctx.font = `700 34px "${FONT}"`;
-  ctx.fillText(PHONE_TEXT, cx, H - 140);
-  ctx.fillText(`${EMAIL_LINE1}${EMAIL_LINE2}`, cx, H - 95);
+  ctx.fillText(phone || PHONE_TEXT, cx, H - 140);
+  ctx.fillText(email || DEFAULT_EMAIL, cx, H - 95);
 }
 
 // ---------- Slide 3 (fixed, never changes) ----------
 
-function drawSlide3(ctx) {
-  drawFrame(ctx, CREAM);
+function drawSlide3(ctx, phone, email, bg, accent) {
+  drawFrame(ctx, bg || CREAM, accent);
+  const accentColor = accent || GREEN;
 
   const cx = W / 2;
-  ctx.fillStyle = GREEN;
+  const maxWidth = W - BORDER * 2 - 100;
+  ctx.fillStyle = accentColor;
   ctx.textAlign = "center";
 
   let y = 220;
@@ -519,15 +551,14 @@ function drawSlide3(ctx) {
 
   y += 150;
   ctx.font = `800 58px "${FONT}"`;
-  ctx.fillText(PHONE_TEXT, cx, y);
-
-  y += 150;
-  ctx.font = `800 52px "${FONT}"`;
-  ctx.fillText(EMAIL_LINE1, cx, y);
-  y += 62;
-  ctx.fillText(EMAIL_LINE2, cx, y);
+  ctx.fillText(phone || PHONE_TEXT, cx, y);
 
   y += 130;
+  ctx.font = `800 52px "${FONT}"`;
+  const emailLines = wrapText(ctx, email || DEFAULT_EMAIL, maxWidth);
+  const emailLineHeight = 62;
+  y = drawCenteredLines(ctx, emailLines, cx, y, emailLineHeight) + emailLineHeight + 68;
+
   ctx.font = `800 60px "${FONT}"`;
   ctx.fillText("Thank you!", cx, y);
 
@@ -553,6 +584,11 @@ const ctx3 = canvas3.getContext("2d");
 const ctxPost = canvasPost.getContext("2d");
 const ctxTopic = canvasTopic.getContext("2d");
 
+const bizNameLine1El = document.getElementById("bizNameLine1");
+const bizNameLine2El = document.getElementById("bizNameLine2");
+const bizPhoneEl = document.getElementById("bizPhone");
+const bizEmailEl = document.getElementById("bizEmail");
+
 const hookTextEl = document.getElementById("hookText");
 const hookPosEl = document.getElementById("hookPos");
 const shuffleBtn = document.getElementById("shuffleBtn");
@@ -569,6 +605,12 @@ const captionTextEl = document.getElementById("captionText");
 const captionBtn = document.getElementById("captionBtn");
 const copyCaptionBtn = document.getElementById("copyCaptionBtn");
 const captionStatusEl = document.getElementById("captionStatus");
+const slide1BgColorEl = document.getElementById("slide1BgColor");
+const slide1AccentColorEl = document.getElementById("slide1AccentColor");
+const slide2BgColorEl = document.getElementById("slide2BgColor");
+const slide2AccentColorEl = document.getElementById("slide2AccentColor");
+const slide3BgColorEl = document.getElementById("slide3BgColor");
+const slide3AccentColorEl = document.getElementById("slide3AccentColor");
 
 const postDogNameEl = document.getElementById("postDogName");
 const postPhotoInputEl = document.getElementById("postPhotoInput");
@@ -576,6 +618,8 @@ const postBlurbEl = document.getElementById("postBlurb");
 const postDownloadBtn = document.getElementById("postDownloadBtn");
 const postShareBtn = document.getElementById("postShareBtn");
 const postShareStatusEl = document.getElementById("postShareStatus");
+const postBgColorEl = document.getElementById("postBgColor");
+const postAccentColorEl = document.getElementById("postAccentColor");
 
 const topicShuffleBtn = document.getElementById("topicShuffleBtn");
 const topicLabelEl = document.getElementById("topicLabel");
@@ -585,6 +629,8 @@ const topicPhotoInputEl = document.getElementById("topicPhotoInput");
 const topicDownloadBtn = document.getElementById("topicDownloadBtn");
 const topicShareBtn = document.getElementById("topicShareBtn");
 const topicShareStatusEl = document.getElementById("topicShareStatus");
+const topicBgColorEl = document.getElementById("topicBgColor");
+const topicAccentColorEl = document.getElementById("topicAccentColor");
 
 let currentPhotoImg = null;
 let currentPostPhotoImg = null;
@@ -614,11 +660,43 @@ function loadCurrentHookIntoBox() {
 }
 
 function renderAll() {
-  drawSlide1(ctx1, hookTextEl.value || HOOKS[getRotationIndex()]);
-  drawSlide2(ctx2, currentPhotoImg, dogNameEl.value);
-  drawSlide3(ctx3);
-  drawPostSlide(ctxPost, currentPostPhotoImg, postDogNameEl.value, postBlurbEl.value);
-  drawTopicSlide(ctxTopic, currentTopicPhotoImg, topicTitleEl.value, topicBodyEl.value);
+  const bizName1 = bizNameLine1El.value;
+  const bizName2 = bizNameLine2El.value;
+  const phone = bizPhoneEl.value;
+  const email = bizEmailEl.value;
+  const bizNameCombined = `${bizName1} ${bizName2}`.trim();
+
+  drawSlide1(
+    ctx1,
+    hookTextEl.value || HOOKS[getRotationIndex()],
+    bizName1,
+    bizName2,
+    slide1BgColorEl.value,
+    slide1AccentColorEl.value
+  );
+  drawSlide2(ctx2, currentPhotoImg, dogNameEl.value, slide2BgColorEl.value, slide2AccentColorEl.value);
+  drawSlide3(ctx3, phone, email, slide3BgColorEl.value, slide3AccentColorEl.value);
+  drawPostSlide(
+    ctxPost,
+    currentPostPhotoImg,
+    postDogNameEl.value,
+    postBlurbEl.value,
+    phone,
+    email,
+    postBgColorEl.value,
+    postAccentColorEl.value
+  );
+  drawTopicSlide(
+    ctxTopic,
+    currentTopicPhotoImg,
+    topicTitleEl.value,
+    topicBodyEl.value,
+    bizNameCombined,
+    phone,
+    email,
+    topicBgColorEl.value,
+    topicAccentColorEl.value
+  );
 }
 
 function pickRandomTopic() {
@@ -657,6 +735,26 @@ shuffleBtn.addEventListener("click", () => {
   loadCurrentHookIntoBox();
   renderAll();
 });
+
+[bizNameLine1El, bizNameLine2El, bizPhoneEl, bizEmailEl].forEach((el) => {
+  el.addEventListener("input", () => {
+    saveBizInfo();
+    renderAll();
+  });
+});
+
+[
+  slide1BgColorEl,
+  slide1AccentColorEl,
+  slide2BgColorEl,
+  slide2AccentColorEl,
+  slide3BgColorEl,
+  slide3AccentColorEl,
+  postBgColorEl,
+  postAccentColorEl,
+  topicBgColorEl,
+  topicAccentColorEl,
+].forEach((el) => el.addEventListener("input", renderAll));
 
 dogNameEl.addEventListener("input", renderAll);
 
@@ -849,6 +947,7 @@ topicShareBtn.addEventListener("click", async () => {
 // ---------- init ----------
 
 async function init() {
+  loadBizInfo();
   loadCurrentHookIntoBox();
   pickRandomTopic();
   renderAll(); // draw immediately with fallback font so the page isn't blank

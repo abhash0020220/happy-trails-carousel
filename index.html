@@ -13,6 +13,26 @@
 <h1>Happy Trails Dog Walking — Instagram Carousel Generator</h1>
 
 <section class="controls">
+  <h2>Business Info (applies everywhere it's shown — logo, contact slide, footers)</h2>
+  <div class="field">
+    <label for="bizNameLine1">Business name (large line):</label>
+    <input type="text" id="bizNameLine1" value="Happy Trails" />
+  </div>
+  <div class="field">
+    <label for="bizNameLine2">Tagline / subtitle (small line):</label>
+    <input type="text" id="bizNameLine2" value="Dog Walking" />
+  </div>
+  <div class="field">
+    <label for="bizPhone">Phone:</label>
+    <input type="text" id="bizPhone" value="669-250-9410" />
+  </div>
+  <div class="field">
+    <label for="bizEmail">Email:</label>
+    <input type="text" id="bizEmail" value="happytrailspetcare365@gmail.com" />
+  </div>
+</section>
+
+<section class="controls">
   <div class="field">
     <label for="hookText">Hook headline (slide 1) — editable, doesn't affect rotation:</label>
     <textarea id="hookText" rows="2"></textarea>
@@ -40,6 +60,28 @@
     <button id="captionBtn" type="button">Generate Caption</button>
     <button id="copyCaptionBtn" type="button">Copy Caption</button>
     <span id="captionStatus" class="hint"></span>
+  </div>
+
+  <div class="field colors">
+    <span>Slide 1 colors:</span>
+    <label for="slide1BgColor">Background</label>
+    <input type="color" id="slide1BgColor" value="#efd389" />
+    <label for="slide1AccentColor">Border/text</label>
+    <input type="color" id="slide1AccentColor" value="#135c48" />
+  </div>
+  <div class="field colors">
+    <span>Slide 2 colors:</span>
+    <label for="slide2BgColor">Background</label>
+    <input type="color" id="slide2BgColor" value="#fbf3dc" />
+    <label for="slide2AccentColor">Border/text</label>
+    <input type="color" id="slide2AccentColor" value="#135c48" />
+  </div>
+  <div class="field colors">
+    <span>Slide 3 colors:</span>
+    <label for="slide3BgColor">Background</label>
+    <input type="color" id="slide3BgColor" value="#fbf3dc" />
+    <label for="slide3AccentColor">Border/text</label>
+    <input type="color" id="slide3AccentColor" value="#135c48" />
   </div>
 </section>
 
@@ -95,6 +137,14 @@
     <button id="topicShareBtn" type="button">Share to Instagram</button>
     <span id="topicShareStatus" class="hint"></span>
   </div>
+
+  <div class="field colors">
+    <span>Colors:</span>
+    <label for="topicBgColor">Background</label>
+    <input type="color" id="topicBgColor" value="#fbf3dc" />
+    <label for="topicAccentColor">Border/text</label>
+    <input type="color" id="topicAccentColor" value="#135c48" />
+  </div>
 </section>
 
 <section class="preview">
@@ -129,6 +179,14 @@
     <button id="postDownloadBtn" type="button">Download Post</button>
     <button id="postShareBtn" type="button">Share to Instagram</button>
     <span id="postShareStatus" class="hint"></span>
+  </div>
+
+  <div class="field colors">
+    <span>Colors:</span>
+    <label for="postBgColor">Background</label>
+    <input type="color" id="postBgColor" value="#fbf3dc" />
+    <label for="postAccentColor">Border/text</label>
+    <input type="color" id="postAccentColor" value="#135c48" />
   </div>
 </section>
 
