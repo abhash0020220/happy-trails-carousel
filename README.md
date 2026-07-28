@@ -14,15 +14,18 @@ Clicking **Generate & Download All 3** renders three 1080×1350 PNGs on
 
 A **Generate Caption** button also writes an Instagram caption (via Gemini,
 see below) that pulls in the current hook, services, rates, and dog name.
+Each of the 3 carousel slides also has its own **Share to Instagram** button
+(same Web Share API behavior as described below).
 
 Between the carousel and the post-walk section is a **Random Topic Slide**
 generator — a single business-info slide (About Us, What We Do, Pricing, Meet
-the Walkers, etc.). Click **Shuffle Random Topic** to pull a random preset
-title + body from the `TOPICS` array in `app.js` (edit that array to add or
-change topics), then freely edit the title, body text, and optionally attach
-a photo before downloading or sharing. Unlike the hook rotation on slide 1,
-this picks a topic at random rather than cycling in sequence, since the ask
-was specifically for randomness here.
+the Walkers, etc.) with a contact-info footer (business name, phone, email),
+matching slide 3's contact block. Click **Shuffle Random Topic** to pull a
+random preset title + body from the `TOPICS` array in `app.js` (edit that
+array to add or change topics), then freely edit the title, body text, and
+optionally attach a photo before downloading or sharing. Unlike the hook
+rotation on slide 1, this picks a topic at random rather than cycling in
+sequence, since the ask was specifically for randomness here.
 
 There's also a separate **Post-Walk Thank You Post** section below the
 carousel — a one-off single image (same brand look, cream background) for

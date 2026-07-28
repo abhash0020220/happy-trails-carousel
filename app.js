@@ -433,7 +433,7 @@ function drawTopicSlide(ctx, photoImg, title, body) {
   contentHeight += bodyLines.length * bodyLineHeight;
 
   const topBound = BORDER + 70;
-  const bottomBound = H - 180;
+  const bottomBound = H - 300; // leave room for the contact-info footer
   const startY = topBound + Math.max(0, (bottomBound - topBound - contentHeight) / 2);
 
   // topY tracks the top of the next block; convert to a text baseline only
@@ -486,9 +486,22 @@ function drawTopicSlide(ctx, photoImg, title, body) {
   ctx.font = `700 40px "${FONT}"`;
   drawCenteredLines(ctx, bodyLines, cx, topY + bodyLineHeight * 0.8, bodyLineHeight);
 
-  // small brand footer
-  ctx.font = `700 32px "${FONT}"`;
-  ctx.fillText("Happy Trails Dog Walking", cx, H - 80);
+  // contact-info footer
+  const footerSepY = H - 260;
+  ctx.strokeStyle = GREEN;
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.moveTo(cx - 260, footerSepY);
+  ctx.lineTo(cx + 260, footerSepY);
+  ctx.stroke();
+
+  ctx.fillStyle = GREEN;
+  ctx.font = `800 40px "${FONT}"`;
+  ctx.fillText("Happy Trails Dog Walking", cx, H - 195);
+
+  ctx.font = `700 34px "${FONT}"`;
+  ctx.fillText(PHONE_TEXT, cx, H - 140);
+  ctx.fillText(`${EMAIL_LINE1}${EMAIL_LINE2}`, cx, H - 95);
 }
 
 // ---------- Slide 3 (fixed, never changes) ----------
@@ -546,6 +559,12 @@ const shuffleBtn = document.getElementById("shuffleBtn");
 const dogNameEl = document.getElementById("dogName");
 const photoInputEl = document.getElementById("photoInput");
 const generateBtn = document.getElementById("generateBtn");
+const canvas1ShareBtn = document.getElementById("canvas1ShareBtn");
+const canvas1ShareStatusEl = document.getElementById("canvas1ShareStatus");
+const canvas2ShareBtn = document.getElementById("canvas2ShareBtn");
+const canvas2ShareStatusEl = document.getElementById("canvas2ShareStatus");
+const canvas3ShareBtn = document.getElementById("canvas3ShareBtn");
+const canvas3ShareStatusEl = document.getElementById("canvas3ShareStatus");
 const captionTextEl = document.getElementById("captionText");
 const captionBtn = document.getElementById("captionBtn");
 const copyCaptionBtn = document.getElementById("copyCaptionBtn");
@@ -747,6 +766,26 @@ generateBtn.addEventListener("click", async () => {
   setRotationIndex(next);
   loadCurrentHookIntoBox();
   renderAll();
+});
+
+canvas1ShareBtn.addEventListener("click", async () => {
+  renderAll();
+  await shareCanvas(canvas1, "slide-1-hook.png", hookTextEl.value || HOOKS[getRotationIndex()], canvas1ShareStatusEl);
+});
+
+canvas2ShareBtn.addEventListener("click", async () => {
+  renderAll();
+  await shareCanvas(
+    canvas2,
+    "slide-2-services.png",
+    `Meet ${dogNameEl.value || "our pup"}! Walks, feeding & water visits, playtime, and short-term dogsitting in the Cambrian area.`,
+    canvas2ShareStatusEl
+  );
+});
+
+canvas3ShareBtn.addEventListener("click", async () => {
+  renderAll();
+  await shareCanvas(canvas3, "slide-3-contact.png", "Contact Happy Trails Dog Walking!", canvas3ShareStatusEl);
 });
 
 function canvasToBlob(canvas) {
